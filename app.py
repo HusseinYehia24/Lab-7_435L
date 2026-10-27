@@ -1,4 +1,5 @@
 import sqlite3
+from pathlib import Path
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -197,5 +198,29 @@ def api_update_user():
 def api_delete_user(user_id):
     return jsonify(delete_user(user_id))
 
+def initialize_database():
+    """Create the database and example users on the first app run."""
+    if Path('database.db').exists():
+        return
+
+    create_db_table()
+
+    names = [
+        'Hussein Yehia',
+        'Ali Khasse',
+        'Farid Saker',
+        'Moosa Koosa',
+        'Talal Balal',
+    ]
+
+    for number, name in enumerate(names, start=1):
+        insert_user({
+            'name': name,
+            'email': name.lower().replace(' ', '.') + '@example.com',
+            'phone': '000000000{}'.format(number),
+            'address': 'Example Address {}'.format(number),
+            'country': 'Lebanon',
+        })
 if __name__ == "__main__":
+    initialize_database()
     app.run()
